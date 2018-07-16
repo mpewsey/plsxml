@@ -1,0 +1,12 @@
+pandas>=0.23.0
+astropy>=3.0.2
+
+# test
+pytest>=3.5.1
+pytest-cov>=2.5.1
+codecov>=2.0.15
+
+# docs
+jinja2>=2.10
+recommonmark>=0.4.0
+docutils==0.14

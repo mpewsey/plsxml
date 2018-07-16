@@ -1,0 +1,2 @@
+.. automodule:: plsxml.data
+  :members:
