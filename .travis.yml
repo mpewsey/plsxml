@@ -9,12 +9,3 @@ script:
 - codecov
 notifications:
   email: false
-deploy:
-  provider: pypi
-  user: line-mind
-  password:
-    secure: GzsKx1cEqT6sm7UdKtBec83JMg8TZwP7yuclfybRr758MJTtMgj21qh+0WJm6MVkqCgaeiSBRzPVIsBYUUKuJTR9T162x7a6JySzDSoTDwNsJVijjO+6JmoKO3RQMOnzdVXck/puHcOvUwenKRXRaEqsoQvxa4NPZ0jdWEK3Ss01q9jcEsnv8zi2CCqGsDjXh2WqJ+fGgwriQfsVHPS8oEUxvfxR0NzkvG/Xq6TOyyB1aJ6GXiXsRKW+ISKxhwZJq7NEw6C85yFS05opmJbrJc1tSPST4ScM+Hr91bCb3ghpneq/HTivyhxVUpSYlwXcnZRtzEI8it6/aBK0kHuLpWg3rKIZ7zuq8+sLLk38naUYKt658gnKDPCUSHPRW+drbvO9aguCDPVxWi8tNKV2oIX0ta3k4tiE1YHNWI90Hqq+0H7y5qESMU1hWRTDyAlR8ebwsLhWwJBcck0mrOZ5wLUmZfAtHEqOVrb2kFA4fep4CAU4kFxnX5fxAxs0kCPQ9zsy9G/Eoy3Kw1HYXpChFbeGq0Jbj65BOnSaN1fr0VfD4s7uPG1SgPSWlt7eY7UMBtmONbgoEyopjLMAo2UUVi/ffVnjWPkT8N9RV3QPHAtoDBUxfY6/tMIMruPmKVzvDRcuym9020+sBy1XTUi/KxsG8i3yL5Q04V76zb1MXQs=
-  on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: line-mind/plsxml
