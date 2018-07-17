@@ -10,11 +10,11 @@ script:
 deploy:
   provider: pypi
   user: line-mind
-  on:
-    branch: master
-    python: 3.6
-    tags: true
-  distributions: sdist bdist_wheel
-  skip-cleanup: true
   password:
-    secure: hOuiF3WYVqznmVxBZsXmaA0EG03aSO31/ZfWL15X2JPD/rYQkb3NqBUOl32qVySDtaPQLxSnBeUerckTzI2luwi2+I+TNS4AkD/r5s+PR601sgkD7u4pbJ+ph4fhmSFrzeO2STsWcEBEwQ4CQs91vMXLzB2LilI5ANjetVCAzs0+wyYZ9ZgCpwgWjriII9+6tj/vS5lG0tc2LaXiBP7TAzGN/mRDqRNRhl4Gv82LKtAOk1vhs2q0KBYYV82/IEUlf4Pp7JOXG9FGdVTCdDFXbX79V3VECNNrI3t4iBoG24TI4Uyf2uC0dv+6+HtRrieWtyjykB6/JfKguXiikNlI/jho0sXeimq1o8K1uLb9g4F7eIXESEX4kYb+NABWBzd550kgm9s+Wb+n+jOCAWPExskX6TMeae6PSYJNaMrnG8+BUjJIwH27KUuLV3YxYkS+F088wQE9YztTGx5fK8Tr0uLcBRlDXmwJOgAdS9+Dk28afE7YFDjxgoJLSeBj86RHRjBxar4Bh6nYKRfk8sXHpi5BwElNuIZl6B9tofepO28Gyo6ZXuLb282aUjQboXBvkMehDHt0KlFFlPTtZ15My0pBg6/DrdD1D+OM4Jh+10HfhyiO9KDFAC19eHTBS+RVi5hbCz+sW+gCkwph3NDyzjS8/5M4OX+MZSVx+0eNqYg=
+    secure: cA8ewcSTJFlkqsw9vXTA1QmuZTIP7iuj8eeB4ER3PCIiTqBTT2trto3h1zdVZPtpuFD0c6I8nxt97biyuHw3gsA6FgHYUR16NocdegxmwozANqg/shTuORzgPH8GF0xVTmw5xMMYs5JWVkwL3O6W7HxvGoozmPXaC3/T2wJ03CGdOh5g3oxYUwERKv/kSFBYTg0Nvlw5XO9T/4qHl25TM2uvxbm4Ve60+TyUtCwO+esLWUbQojkE6vO3VV7d4huXorzb2WkDgOka4wStbfThRIVxl1pSxyQvI6tbiDfm+Kg6E3IPG7iOnN4R1FIrYvrIu2NYFdpQ7LHDq7xLPiLZqoBqU3TzHoSV+3akoBSbwttrlPpk3xwv//RgsY0wty/jfJhbMp7Qi0JZL/gLGXKxCLstcBso/Ypru190DWeaBziBEP4Shkf1jXf8RgKaPnpuArTuNNfqxIUPn0raZ0/sN7UlnjA1uoTnOFXhkg/FVc2ZaOA8wTvO2ZQygVJyFOVjJVpTY/dun3piqvw/Sl3kMB1cfxNEN62smP/BlWKFeLktO4LS1rLtl4TjTOJlC6M6l8dggwxYAUV8COfJKi74GY9l5Ke9P+GNb7UAcXERtG8m+dMs40QlPMmh7us2bNm+F4AYTOCffEj9wDdWiCudMGl5/MdLsJJlFOaKN3rKKVA=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: line-mind/plsxml
+notifications:
+  email: false
