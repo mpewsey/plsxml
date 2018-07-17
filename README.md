@@ -42,16 +42,6 @@ See [example.ipynb](example.ipynb) for example usages of this package.
 
 ## Developer Notes
 
-### Deployment to PyPi
-
-To deploy a new release and issue to PyPi, add a version tag and push the
-package with tags. This must occur on the master branch.
-
-```
-git tag -a #.#.# -m "version #.#.# release"
-git push --tags
-```
-
 ### Local Testing
 
 Testing is performed using `pytest` and `pytest-cov`. To test the package locally,
