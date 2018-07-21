@@ -8,6 +8,7 @@ __pycache__/
 # C extensions
 *.so
 
+plsxml/data/private/*
 private/*
 docs/index.md
 

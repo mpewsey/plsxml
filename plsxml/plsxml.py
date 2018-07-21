@@ -12,8 +12,7 @@ import ast
 from collections import OrderedDict
 import xml.etree.cElementTree as et
 import pandas as pd
-import astropy.units as u
-u.imperial.enable()
+from .units import u
 
 
 class PLSXML(OrderedDict):
@@ -41,8 +40,9 @@ class PLSXML(OrderedDict):
     Attributes
     ----------
     parse_units : bool, default is False
-        If True, tags with 'units' will attemp to have Astropy units incorporated.
-    print_statuses: bool, default is False
+        If True, tags with 'units' attributes will attempt to have Astropy units
+        incorporated.
+    print_statuses : bool, default is False
         If True, status messages will be printed as files and tables are parsed.
         This is useful for knowing the status of a large project.
 
@@ -58,7 +58,6 @@ class PLSXML(OrderedDict):
 
     You can add files after the initialization via the `append` method:
 
-    >>> xml = PLSXML(parse_units = True)
     >>> xml.append(path)
 
     The class is a subclass of an OrderedDict. Once loaded, data can be accessed
@@ -71,23 +70,23 @@ class PLSXML(OrderedDict):
 
     >>> print(xml.table_summary())
     galloping_ellipses_summary
-	rowtext                                                     	None
-	structure                                                   	'TERM'
-	set                                                         	1
-	phase                                                       	1
-	ahead_span_length                                           	258.2 ft
-	minimum_clearance_set                                       	1
-	minimum_clearance_phase                                     	2
-	minimum_clearance_galloping_ellipse_method                  	'Single mid span'
-	minimum_clearance_distance                                  	1.52 ft
-	minimum_clearance_overlap                                   	0.0
-	minimum_clearance_wind_from                                 	'Left'
-	minimum_clearance_mid_span_sag                              	12.15 ft
-	minimum_clearance_insulator_swing_angle                     	0.0 deg
-	minimum_clearance_span_swing_angle                          	63.1 deg
-	minimum_clearance_major_axis_length                         	16.2 ft
-	minimum_clearance_minor_axis_length                         	6.5 ft
-	minimum_clearance_b_distance                                	3.0 ft
+    	rowtext                                                     	None
+    	structure                                                   	'TERM'
+    	set                                                         	1
+    	phase                                                       	1
+    	ahead_span_length                                           	258.2 ft
+    	minimum_clearance_set                                       	1
+    	minimum_clearance_phase                                     	2
+    	minimum_clearance_galloping_ellipse_method                  	'Single mid span'
+    	minimum_clearance_distance                                  	1.52 ft
+    	minimum_clearance_overlap                                   	0.0
+    	minimum_clearance_wind_from                                 	'Left'
+    	minimum_clearance_mid_span_sag                              	12.15 ft
+    	minimum_clearance_insulator_swing_angle                     	0.0 deg
+    	minimum_clearance_span_swing_angle                          	63.1 deg
+    	minimum_clearance_major_axis_length                         	16.2 ft
+    	minimum_clearance_minor_axis_length                         	6.5 ft
+    	minimum_clearance_b_distance                                	3.0 ft
 
     """
     def __init__(self, source = None, tables = None, parse_units = False, print_statuses = False):
@@ -123,14 +122,11 @@ class PLSXML(OrderedDict):
             return data
 
     def _clean_unit(self, unit):
-        """Attemps to replace characters and units that astrpoy cannot understand."""
+        """Attemps to replace characters and units that Astropy cannot understand."""
         repl = {
-            '-' : ' ',
-            'psi' : '(lbf / inch^2)',
-            'ksi' : '(1000 lbf / inch^2)',
-            'lbs' : 'lbf',
-            'deg F' : 'deg_F',
-            'Sec' : 's'
+            '-': ' ',
+            'deg F': 'deg_F',
+            'deg C': 'deg_C'
         }
 
         for x, y in repl.items():

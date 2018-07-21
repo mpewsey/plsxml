@@ -11,6 +11,7 @@
 
 * [PLSXML](plsxml.rst)
 * [Data](data.rst)
+* [Units](units.rst)
 
 ## About
 

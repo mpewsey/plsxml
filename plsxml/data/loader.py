@@ -19,9 +19,9 @@ from ..plsxml import PLSXML
 DATA_FOLDER = os.path.abspath(os.path.dirname(__file__))
 
 METADATA = {
-'galloping' :
-    {'file' : 'galloping.xml',
-     'tables' : None
+'galloping':
+    {'file': 'galloping.xml',
+     'tables': None
     }
 }
 
