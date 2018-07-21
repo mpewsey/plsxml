@@ -1,5 +1,16 @@
 """
-The PLSXML data module contains sample and test data.
+Summary
+-------
+The PLSXML data module contains methods for accessing sample and test data.
+
+Global Variables
+----------------
+DATA_FOLDER
+    The absolute path to the data directory.
+
+Methods
+-------
+
 """
 
 import os

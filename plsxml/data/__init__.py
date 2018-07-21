@@ -1,7 +1,7 @@
 """
-=================================
-Data Loaders (:mod:`plsxml.data`)
-=================================
+=========================
+Data (:mod:`plsxml.data`)
+=========================
 
 .. automodule:: plsxml.data.loader
   :members:

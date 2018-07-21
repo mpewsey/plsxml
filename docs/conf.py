@@ -85,8 +85,6 @@ extensions = [
     'sphinx.ext.githubpages',
 ]
 
-numpydoc_show_inherited_class_members = False
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -113,7 +111,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'scipy-sphinx-theme/*']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -124,8 +122,30 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_rtd_theme'
-html_theme_path = ['_themes']
+themedir = os.path.join(os.path.dirname(__file__), 'scipy-sphinx-theme', '_theme')
+if not os.path.isdir(themedir):
+    raise RuntimeError('Get the scipy-sphinx-theme first, '
+                       'via git submodule init && git submodule update')
+
+
+html_theme = 'scipy'
+html_theme_path = [themedir]
+
+# numpydoc settings
+numpydoc_show_class_members = False
+numpydoc_show_inherited_class_members = False
+class_members_toctree = False
+
+html_theme_options = {
+    "edit_link": False,
+    "sidebar": "left",
+    "scipy_org_logo": False,
+    "rootlinks": []
+}
+html_sidebars = {}
+
+html_title = "%s v%s Manual" % (project, version)
+html_last_updated_fmt = '%b %d, %Y'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -224,6 +244,6 @@ todo_include_todos = True
 def setup(app):
     app.add_config_value('recommonmark_config', {
             'url_resolver': lambda url: github_doc_root + url,
-            'auto_toc_tree_section': 'Module Contents',
+            'auto_toc_tree_section': 'Table of Contents',
             }, True)
     app.add_transform(AutoStructify)
