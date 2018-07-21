@@ -20,21 +20,41 @@ class PLSXML(OrderedDict):
         PLSXML['galloping_ellipses_summary'][0]['phase']
 
 
-    Parameters:
-        source : str or list
-            A string or list of strings defining the XML file path(s).
-            If None, then no tables will be parsed.
-        tables : list
-            A list of strings defining the table names to be loaded from the
-            referenced XML files. If None, then all tables in the XML files
-            will be parsed.
-        parse_units : bool
-            If True, elements with the 'units' attribute will attempt to be
-            converted to Astropy quantities. This operation takes longer so could
-            be disabled if including units is unimportant to you.
-        print_statuses : bool
-            If True, status messages will be printed during the parsing process.
-            This can be useful to see the progress of long XML files.
+    Parameters
+    ----------
+    source : str or list
+        A string or list of strings defining the XML file path(s).
+        If None, then no tables will be parsed.
+    tables : list
+        A list of strings defining the table names to be loaded from the
+        referenced XML files. If None, then all tables in the XML files
+        will be parsed.
+    parse_units : bool
+        If True, elements with the 'units' attribute will attempt to be
+        converted to Astropy quantities. This operation takes longer so could
+        be disabled if including units is unimportant to you.
+    print_statuses : bool
+        If True, status messages will be printed during the parsing process.
+        This can be useful to see the progress of long XML files.
+
+
+    Attributes
+    ----------
+    parse_units : bool, default is False
+        If True, tags with 'units' will attemp to have Astropy units incorporated.
+    print_statuses: bool, default is False
+        If True, status messages will be printed as files and tables are parsed.
+        This is useful for knowing the status of a large project.
+
+    Examples
+    --------
+    >>> from plsxml import PLSXML
+    >>> from plsxml.data import data_path
+    >>> path = data_path('galloping')
+    >>> xml = PLSXML(path, parse_units = True)
+    >>> xml['galloping_ellipses_summary'][0]['minimum_clearance_galloping_ellipse_method']
+    'Single mid span'
+
     """
     def __init__(self, source = None, tables = None, parse_units = False, print_statuses = False):
         self.parse_units = parse_units
@@ -89,13 +109,14 @@ class PLSXML(OrderedDict):
         all tables will be loaded. Otherwise, pass a list of the specific
         table names to be parsed.
 
-        Parameters:
-            source : str
-                A string defining the XML file path.
-            tables: list
-                A list of strings defining the table names to be loaded from the
-                referenced XML file. If None, then all tables in the XML file
-                will be parsed.
+        Parameters
+        ----------
+        source : str
+            A string defining the XML file path.
+        tables: list
+            A list of strings defining the table names to be loaded from the
+            referenced XML file. If None, then all tables in the XML file
+            will be parsed.
         """
         self.print('Parsing:', source)
         messages = set()
@@ -181,11 +202,12 @@ class PLSXML(OrderedDict):
         """
         Returns a dictionary of dataframes for the parsed tables specified.
 
-        Parameters:
-            tables : list
-                A list of strings defining the table names for which dataframes
-                will be created. If None, then all tables parsed in the object
-                will be converted.
+        Parameters
+        ----------
+        tables : list
+            A list of strings defining the table names for which dataframes
+            will be created. If None, then all tables parsed in the object
+            will be converted.
         """
         d = OrderedDict()
 

@@ -78,11 +78,14 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
+    #'sphinx.ext.linkcode',
+    'numpydoc',
     #'sphinx.ext.imgmath',
-    #'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
     'sphinx.ext.viewcode',
+    'sphinx.ext.githubpages',
 ]
+
+numpydoc_show_inherited_class_members = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

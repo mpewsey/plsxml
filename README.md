@@ -1,8 +1,10 @@
 # PLSXML
 
+![PyPI](https://img.shields.io/pypi/v/plsxml.svg)
 [![Build Status](https://travis-ci.com/line-mind/plsxml.svg?branch=master)](https://travis-ci.com/line-mind/plsxml)
 [![Documentation Status](https://readthedocs.org/projects/plsxml/badge/?version=latest)](https://plsxml.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gh/line-mind/plsxml/branch/master/graph/badge.svg)](https://codecov.io/gh/line-mind/plsxml)
+
 
 ## Contents
 
@@ -14,7 +16,6 @@
 
 ### Developer Contents
 
-* [Deployment to PyPi](#deploying-to-pypi)
 * [Local Testing](#local-testing)
 
 ### Module Contents
