@@ -11,11 +11,11 @@
 
 * [PLSXML](plsxml.rst)
 * [Data](data.rst)
-* [Units](units.rst)
+* [Example Usage](example.ipynb)
 
 ## About
 
-This package provides a class for parsing PLS-CADD XML files to dictionaries and `pandas` data frames. It is also capable of converting elements with 'units' attributes to `astropy` quantities, though currently this package may not be able to handle all units.
+This package provides a class for parsing PLS-CADD XML files to dictionaries and `pandas` data frames.
 
 ## Installation
 
@@ -24,10 +24,6 @@ This package may be installed via pip:
 ```
 pip install plsxml
 ```
-
-## Example Usage
-
-See [example.ipynb](https://github.com/line-mind/plsxml/blob/master/example.ipynb) for example usages of this package.
 
 ## Local Testing
 

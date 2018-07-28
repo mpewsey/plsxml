@@ -1,2 +1,0 @@
-.. automodule:: plsxml.units
-   :members:

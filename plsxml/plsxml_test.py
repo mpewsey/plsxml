@@ -1,6 +1,6 @@
 from pytest import approx
-from ..data import data_path, data_names, load_data
-from ..plsxml import PLSXML
+from .data import data_path, data_names, load_data
+from .plsxml import PLSXML
 
 
 def test_init():
@@ -57,11 +57,6 @@ def test_drop_duplicates():
 def test_print_statuses():
     path = data_path('galloping')
     xml = PLSXML(path, print_statuses = True)
-
-
-def test_units():
-    path = data_path('galloping')
-    xml = PLSXML(path, parse_units = True)
 
 
 def test_load_data():

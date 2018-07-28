@@ -11,8 +11,6 @@ Classes
 import ast
 from collections import OrderedDict
 import xml.etree.cElementTree as et
-import pandas as pd
-from .units import u
 
 
 class PLSXML(OrderedDict):
@@ -28,23 +26,9 @@ class PLSXML(OrderedDict):
         A list of strings defining the table names to be loaded from the
         referenced XML files. If None, then all tables in the XML files
         will be parsed.
-    parse_units : bool, default is False
-        If True, elements with the 'units' attribute will attempt to be
-        converted to Astropy quantities. This operation takes longer so could
-        be disabled if including units is unimportant to you.
     print_statuses : bool, default is False
         If True, status messages will be printed during the parsing process.
         This can be useful to see the progress of long XML files.
-
-
-    Attributes
-    ----------
-    parse_units : bool, default is False
-        If True, tags with 'units' attributes will attempt to have Astropy units
-        incorporated.
-    print_statuses : bool, default is False
-        If True, status messages will be printed as files and tables are parsed.
-        This is useful for knowing the status of a large project.
 
     Examples
     --------
@@ -54,7 +38,7 @@ class PLSXML(OrderedDict):
     To load data from the intializer:
 
     >>> path = data_path('galloping')
-    >>> xml = PLSXML(path, parse_units = True)
+    >>> xml = PLSXML(path)
 
     You can add files after the initialization via the `append` method:
 
@@ -70,27 +54,26 @@ class PLSXML(OrderedDict):
 
     >>> print(xml.table_summary())
     galloping_ellipses_summary
-    	rowtext                                                     	None
-    	structure                                                   	'TERM'
-    	set                                                         	1
-    	phase                                                       	1
-    	ahead_span_length                                           	258.2 ft
-    	minimum_clearance_set                                       	1
-    	minimum_clearance_phase                                     	2
-    	minimum_clearance_galloping_ellipse_method                  	'Single mid span'
-    	minimum_clearance_distance                                  	1.52 ft
-    	minimum_clearance_overlap                                   	0.0
-    	minimum_clearance_wind_from                                 	'Left'
-    	minimum_clearance_mid_span_sag                              	12.15 ft
-    	minimum_clearance_insulator_swing_angle                     	0.0 deg
-    	minimum_clearance_span_swing_angle                          	63.1 deg
-    	minimum_clearance_major_axis_length                         	16.2 ft
-    	minimum_clearance_minor_axis_length                         	6.5 ft
-    	minimum_clearance_b_distance                                	3.0 ft
+    	rowtext                                          None
+    	structure                                        'TERM'
+    	set                                              1
+    	phase                                            1
+    	ahead_span_length                                258.2
+    	minimum_clearance_set                            1
+    	minimum_clearance_phase                          2
+    	minimum_clearance_galloping_ellipse_method       'Single mid span'
+    	minimum_clearance_distance                       1.52
+    	minimum_clearance_overlap                        0.0
+    	minimum_clearance_wind_from                      'Left'
+    	minimum_clearance_mid_span_sag                   12.15
+    	minimum_clearance_insulator_swing_angle          0.0
+    	minimum_clearance_span_swing_angle               63.1
+    	minimum_clearance_major_axis_length              16.2
+    	minimum_clearance_minor_axis_length              6.5
+    	minimum_clearance_b_distance                     3.0
 
     """
-    def __init__(self, source = None, tables = None, parse_units = False, print_statuses = False):
-        self.parse_units = parse_units
+    def __init__(self, source = None, tables = None, print_statuses = False):
         self.print_statuses = print_statuses
 
         if source != None:
@@ -121,18 +104,6 @@ class PLSXML(OrderedDict):
         except:
             return data
 
-    def _clean_unit(self, unit):
-        """Attemps to replace characters and units that Astropy cannot understand."""
-        repl = {
-            '-': ' ',
-            'deg F': 'deg_F',
-            'deg C': 'deg_C'
-        }
-
-        for x, y in repl.items():
-            unit = unit.replace(x, y)
-        return unit
-
     def append(self, source, tables = None):
         """
         Parses the input file into a dictionary. If tables is None,
@@ -149,7 +120,6 @@ class PLSXML(OrderedDict):
             will be parsed.
         """
         self._print('Parsing:', source)
-        messages = set()
         exist_tables = set(self.keys())
         new_tables = set()
 
@@ -177,7 +147,7 @@ class PLSXML(OrderedDict):
                 elif table is not None and obj is None and elem.tag != 'source_file':
                     obj = elem.tag
                     odict = OrderedDict()
-                    if titledetail not in (None, ''):
+                    if titledetail not in {None, ''}:
                         odict['titledetail'] = self._convert_type(titledetail)
 
             elif event == 'end':
@@ -191,14 +161,7 @@ class PLSXML(OrderedDict):
                     obj = None
 
                 elif obj != None:
-                    v = self._convert_type(elem.text)
-                    if self.parse_units and type(v) != str and 'units' in elem.attrib:
-                        try:
-                            unit = self._clean_unit(elem.attrib['units'])
-                            v *= u.Unit(unit)
-                        except:
-                            messages.add('Unit {!r} could not be parsed.'.format(elem.attrib['units']))
-                    odict[elem.tag] = v
+                    odict[elem.tag] = self._convert_type(elem.text)
 
                 elem.clear()
 
@@ -207,9 +170,6 @@ class PLSXML(OrderedDict):
         for key in new_tables:
             self._print('Dropping Duplicates:', key)
             self._drop_duplicates(self[key])
-
-        if messages:
-            print('\n'.join(messages))
 
     def _print(self, *args):
         """Prints the message if print_statuses is True."""
@@ -239,12 +199,13 @@ class PLSXML(OrderedDict):
             will be created. If None, then all tables parsed in the object
             will be converted.
         """
-        d = OrderedDict()
+        import pandas as pd
 
         if tables is None:
             tables = self.keys()
 
+        odict = OrderedDict()
         for table in tables:
             if self[table]:
-                d[table] = pd.DataFrame.from_dict(self[table], dtype = 'object')
-        return d
+                odict[table] = pd.DataFrame.from_dict(self[table], dtype = 'object')
+        return odict
