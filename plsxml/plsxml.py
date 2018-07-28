@@ -124,7 +124,7 @@ class PLSXML(OrderedDict):
         new_tables = set()
 
         if tables != None:
-            if type(tables) == str:
+            if type(tables) is str:
                 tables = {tables}
             else:
                 tables = set(tables)
