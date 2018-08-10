@@ -9,8 +9,9 @@
 
 ## Table of Contents
 
+<!--
 * [PLSXML](plsxml.rst)
-* [Data](data.rst)
+* [Data](data.rst)-->
 * [Example Usage](example.ipynb)
 
 ## About
