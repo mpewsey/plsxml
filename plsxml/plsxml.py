@@ -88,7 +88,7 @@ class PLSXML(OrderedDict):
         drop_indices = []
 
         for i, x in enumerate(data):
-            h = hash(tuple(x.items()))
+            h = tuple(x.items())
             if h not in oset:
                 oset.add(h)
             else:
