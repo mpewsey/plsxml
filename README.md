@@ -16,7 +16,7 @@
 
 ## About
 
-This package provides a class for parsing PLS-CADD XML files to dictionaries and `pandas` data frames.
+This package provides a class for parsing PLS-CADD XML files to `pandas` data frames for manipulation in with Python.
 
 ## Installation
 
