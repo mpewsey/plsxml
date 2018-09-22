@@ -12,7 +12,7 @@
 <!--
 * [PLSXML](plsxml.rst)
 * [Data](data.rst)-->
-* [Example Usage](example.ipynb)
+* [Example Usage](https://github.com/line-mind/plsxml/blob/master/example.ipynb)
 
 ## About
 

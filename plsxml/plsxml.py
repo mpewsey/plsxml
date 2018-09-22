@@ -8,25 +8,28 @@ Classes
 
 """
 
+import os
+import re
 import ast
-from collections import OrderedDict
+import zipfile
+import pandas as pd
 import xml.etree.cElementTree as et
 
 
-class PLSXML(OrderedDict):
+class PLSXML(dict):
     """
     A class for parsing PLS-CADD XML files.
 
     Parameters
     ----------
-    source : str or list, default is None
-        A string or list of strings defining the XML file path(s).
-        If None, then no tables will be parsed.
+    path : str or list, default is None
+        A string or list of strings defining the ZIP or XML file path(s).
+        If None, then no files will be loaded.
     tables : list, default is None
         A list of strings defining the table names to be loaded from the
         referenced XML files. If None, then all tables in the XML files
         will be parsed.
-    print_statuses : bool, default is False
+    verbose : bool, default is False
         If True, status messages will be printed during the parsing process.
         This can be useful to see the progress of long XML files.
 
@@ -37,17 +40,17 @@ class PLSXML(OrderedDict):
 
     To load data from the intializer:
 
-    >>> path = data_path('galloping')
+    >>> path = data_path('galloping') # DATA_FOLDER/galloping.xml
     >>> xml = PLSXML(path)
 
     You can add files after the initialization via the `append` method:
 
     >>> xml.append(path)
 
-    The class is a subclass of an OrderedDict. Once loaded, data can be accessed
-    via table name > row index > column name:
+    The class is a subclass of a dictionary. Once loaded, data can be accessed
+    via table name > column name > row index:
 
-    >>> xml['galloping_ellipses_summary'][0]['minimum_clearance_galloping_ellipse_method']
+    >>> xml['galloping_ellipses_summary']['minimum_clearance_galloping_ellipse_method'][0]
     'Single mid span'
 
     A summary of keys can be acquired via the `table_summary` method:
@@ -73,81 +76,113 @@ class PLSXML(OrderedDict):
     	minimum_clearance_b_distance                     3.0
 
     """
-    def __init__(self, source = None, tables = None, print_statuses = False):
-        self.print_statuses = print_statuses
+    def __init__(self, path=None, tables=None, verbose=False):
+        self.verbose = verbose
 
-        if source != None:
-            if type(source) == str:
-                source = [source]
-            for x in source:
+        if path is not None:
+            if type(path) == str:
+                path = [path]
+            for x in path:
                 self.append(x, tables)
 
-    def _drop_duplicates(self, data):
-        """Drops duplicates from list of dictionaries in place."""
-        oset = set()
-        drop_indices = []
-
-        for i, x in enumerate(data):
-            h = tuple(x.items())
-            if h not in oset:
-                oset.add(h)
-            else:
-                drop_indices.append(i)
-
-        for i in reversed(drop_indices):
-            del data[i]
-
-    def _convert_type(self, data):
+    @staticmethod
+    def _convert_type(data):
         """Converts data into appropriate type if it can."""
         try:
             return ast.literal_eval(data)
         except:
             return data
 
-    def append(self, source, tables = None):
+    @staticmethod
+    def _is_xml(path):
+        """Returns True if the input path is a valid XML file name."""
+        fname, ext = os.path.splitext(path)
+
+        # Valid extensions
+        extensions = {'.xml'}
+
+        # Regex expressions in fname to exclude
+        regex = re.compile('__MACOSX|\.')
+
+        return ext in extensions and not regex.search(fname)
+
+    def append(self, path, tables=None):
         """
-        Parses the input file into a dictionary. If tables is None,
+        Parses the input file into the class dictionary. If tables is None,
         all tables will be loaded. Otherwise, pass a list of the specific
         table names to be parsed.
 
         Parameters
         ----------
-        source : str
+        path : str
             A string defining the XML file path.
         tables : list, default is None
             A list of strings defining the table names to be loaded from the
             referenced XML file. If None, then all tables in the XML file
             will be parsed.
         """
-        self._print('Parsing:', source)
-        exist_tables = set(self.keys())
-        new_tables = set()
-
-        if tables != None:
+        if tables is not None:
             if type(tables) is str:
                 tables = {tables}
             else:
                 tables = set(tables)
 
+        # Zipfile
+        if zipfile.is_zipfile(path):
+            with zipfile.ZipFile(path, 'r') as zf:
+                for x in zf.namelist():
+                    if self._is_xml(x):
+                        with zf.open(x, 'r') as fh:
+                            self._print('Parsing:', path, x)
+                            self._load_xml(fh, tables)
+
+        # XML
+        elif os.path.isfile(path) and self._is_xml(path):
+            with open(path, 'rb') as fh:
+                self._print('Parsing:', path)
+                self._load_xml(fh, tables)
+
+        else:
+            print('Append Skipped :: {!r} is not a valid path.'.format(path))
+
+
+    def _load_xml(self, source, tables):
+        """
+        Loads the input file into the class dictionary. If tables is None,
+        all tables will be loaded. Otherwise, pass a list of the specific
+        table names to be parsed.
+
+        Parameters
+        ----------
+        source : file handle
+            A file handle for the XML file.
+        tables : list, default is None
+            A list of strings defining the table names to be loaded from the
+            referenced XML file. If None, then all tables in the XML file
+            will be parsed.
+        """
+        tablesdict = {}
+
         table = None
         obj = None
         titledetail = None
 
-        for event, elem in et.iterparse(source, events = ('start', 'end')):
+        for event, elem in et.iterparse(source, events=('start', 'end')):
             if event == 'start':
                 if elem.tag == 'table':
                     if tables is None or elem.attrib['tagname'] in tables:
                         table = elem.attrib['tagname']
                         titledetail = elem.attrib['titledetail']
-                        new_tables.add(table)
                         self._print('Loading:', table)
-                        if table not in self.keys():
-                            self[table] = []
+
+                        if table not in tablesdict:
+                            tablesdict[table] = []
 
                 elif table is not None and obj is None and elem.tag != 'source_file':
                     obj = elem.tag
-                    odict = OrderedDict()
+                    odict = {}
                     if titledetail not in {None, ''}:
+                        # Title details are included in some POLE and TOWER reports
                         odict['titledetail'] = self._convert_type(titledetail)
 
             elif event == 'end':
@@ -156,56 +191,39 @@ class PLSXML(OrderedDict):
                     obj = None
                     titledetail = None
 
-                elif table != None and elem.tag == obj:
-                    self[table].append(odict)
+                elif table is not None and elem.tag == obj:
+                    tablesdict[table].append(odict)
                     obj = None
 
-                elif obj != None:
+                elif obj is not None:
                     odict[elem.tag] = self._convert_type(elem.text)
 
                 elem.clear()
 
-        new_tables &= exist_tables
-
-        for key in new_tables:
-            self._print('Dropping Duplicates:', key)
-            self._drop_duplicates(self[key])
+        for k in list(tablesdict):
+            d = tablesdict.pop(k)
+            if k in self:
+                self[k].append(d, sort=False)
+                self._print('Dropping Duplicates:', k)
+                self[k].drop_duplicates(inplace=True)
+            else:
+                self[k] = pd.DataFrame.from_dict(d)
+                # Create new dataframe with columns in order.
+                # Copy included to prevent possible view warnings during manipulation.
+                self[k] = self[k][list(d[0])].copy()
+            del d
 
     def _print(self, *args):
-        """Prints the message if print_statuses is True."""
-        if self.print_statuses:
+        """Prints the message if verbose is True."""
+        if self.verbose:
             print(*args)
 
     def table_summary(self):
         """Returns a string of all parsed tables, keys, and example values."""
-        keys = ''
-        for table in sorted(self.keys()):
-            keys += '\n{:s}\n'.format(table)
-            if self[table]:
-                for key in self[table][0].keys():
-                    v = self[table][0][key]
-                    s = '\t{!s:60}\t{!r}\n' if type(v) == str else '\t{!s:60}\t{}\n'
-                    keys += s.format(key, v)
-        return keys
-
-    def dataframes(self, tables = None):
-        """
-        Returns a dictionary of dataframes for the parsed tables specified.
-
-        Parameters
-        ----------
-        tables : list, default is None
-            A list of strings defining the table names for which dataframes
-            will be created. If None, then all tables parsed in the object
-            will be converted.
-        """
-        import pandas as pd
-
-        if tables is None:
-            tables = self.keys()
-
-        odict = OrderedDict()
-        for table in tables:
-            if self[table]:
-                odict[table] = pd.DataFrame.from_dict(self[table], dtype = 'object')
-        return odict
+        summary = ''
+        for table in sorted(self):
+            summary += '\n{:s}\n'.format(table)
+            for key in self[table]:
+                v = self[table][key][0]
+                summary += '\t{!s:60}\t{}\n'.format(key, v)
+        return summary
