@@ -16,15 +16,27 @@ def test_append():
     assert len(xml.keys()) > 0
 
 
-def test_tables_all():
+def test_append_multiple():
     path = data_path('galloping')
-    xml = PLSXML(path, tables = '')
+    xml = PLSXML([path, path])
+    assert len(xml.keys()) > 0
+
+
+def test_append_bad_path():
+    path = 'bad_file_name.docx'
+    xml = PLSXML(path)
+    assert len(xml.keys()) == 0
+
+
+def test_tables_none():
+    path = data_path('galloping')
+    xml = PLSXML(path, tables='')
     assert len(xml.keys()) == 0
 
 
 def test_tables_specific():
     path = data_path('galloping')
-    xml = PLSXML(path, tables = 'galloping_ellipses_summary')
+    xml = PLSXML(path, tables='galloping_ellipses_summary')
     assert len(xml.keys()) == 1
 
 
@@ -34,29 +46,9 @@ def test_table_summary():
     print(xml.table_summary())
 
 
-def test_dataframes():
+def test_verbose():
     path = data_path('galloping')
-    xml = PLSXML(path)
-    print(xml.dataframes())
-
-
-def test_drop_duplicates():
-    n, m = [], []
-    path = data_path('galloping')
-    xml1 = PLSXML(path)
-    xml2 = PLSXML(path)
-    xml2.append(path)
-
-    for k in xml1.keys():
-        n.append(len(xml1[k]))
-        m.append(len(xml2[k]))
-
-    assert approx(n) == m
-
-
-def test_print_statuses():
-    path = data_path('galloping')
-    xml = PLSXML(path, print_statuses = True)
+    xml = PLSXML(path, verbose=True)
 
 
 def test_load_data():

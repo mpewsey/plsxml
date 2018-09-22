@@ -12,11 +12,11 @@
 <!--
 * [PLSXML](plsxml.rst)
 * [Data](data.rst)-->
-* [Example Usage](example.ipynb)
+* [Example Usage](https://github.com/line-mind/plsxml/blob/master/example.ipynb)
 
 ## About
 
-This package provides a class for parsing PLS-CADD XML files to dictionaries and `pandas` data frames.
+This package provides a class for parsing PLS-CADD XML files to `pandas` data frames for manipulation in with Python.
 
 ## Installation
 
