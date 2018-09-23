@@ -39,3 +39,15 @@ plsxml = PLSXML(paths)
 
 The data will be loaded into various `pandas.DataFrame` based on the XML file table names and assigned to the class.
 For more detailed information, see the [example notebook](https://github.com/line-mind/plsxml/blob/master/example.ipynb).
+
+For an example of where this package has been pratically applied, see:
+
+* [Stringing Chart Report Generator](https://github.com/line-mind/stringing_chart)
+
+## PLS-CADD XML Files
+
+Most reports in the PLS-CADD suite can be exported to XML by right-clicking and selecting the export to XML option.
+It is also possible to export an XML file containing data for an entire line through the File menu. XML files for
+an entire line can be large (several GB); therefore, archiving the resulting XML to ZIP can greatly aid in tranferring
+the file across systems and save disk space if more permanently retained. The PLSXML package is also able to read data
+directly from ZIP files for this reason.
