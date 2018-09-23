@@ -16,27 +16,26 @@
 
 ## About
 
-This package provides a class for parsing PLS-CADD XML files to `pandas` data frames for manipulation in with Python.
+This package provides a class for parsing PLS-CADD XML files to `pandas` data frames for manipulation with Python.
 
 ## Installation
 
-This package may be installed via pip:
+The package may be installed via pip:
 
 ```
 pip install plsxml
 ```
 
-## Local Testing
+## Usage
 
-Testing is performed using `pytest` and `pytest-cov`. To test the package locally,
-run the following command from the root directory:
-
-```
-pytest --cov
-```
-
-To summarize testing coverage results in HTML, run:
+Once installed, data may be loaded from XML files or ZIP files containing XML simply by passing the XML and/or ZIP paths
+to the `PLSXML` class.
 
 ```
-coverage html
+from plsxml import PLSXML
+paths = ['folder1/xml_file.xml', 'folder2/zip_file.zip']
+plsxml = PLSXML(paths)
 ```
+
+The data will be loaded into various `pandas.DataFrame` based on the XML file table names and assigned to the class.
+For more detailed information, see the [example notebook](https://github.com/line-mind/plsxml/blob/master/example.ipynb).
