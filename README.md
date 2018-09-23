@@ -49,5 +49,5 @@ For an example of where this package has been pratically applied, see:
 Most reports in the PLS-CADD suite can be exported to XML by right-clicking and selecting the export to XML option.
 It is also possible to export an XML file containing data for an entire line through the File menu. XML files for
 an entire line can be large (several GB); therefore, archiving the resulting XML to ZIP can greatly aid in tranferring
-the file across systems and save disk space if more permanently retained. The PLSXML package is also able to read data
+the file across systems and save disk space if the file is more permanently retained. The PLSXML package is also able to read data
 directly from ZIP files for this reason.
