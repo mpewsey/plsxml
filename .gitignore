@@ -11,6 +11,7 @@ __pycache__/
 plsxml/data/private/*
 private/*
 docs/index.md
+docs/generated
 
 # Distribution / packaging
 .Python
