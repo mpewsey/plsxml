@@ -1,13 +1,3 @@
-"""
-Summary
--------
-The PLSXML module contains a class for parsing PLS-CADD XML files.
-
-Classes
--------
-
-"""
-
 from __future__ import print_function
 import os
 import re
@@ -15,6 +5,8 @@ import ast
 import zipfile
 import pandas as pd
 import xml.etree.cElementTree as et
+
+__all__ = ['PLSXML']
 
 
 class PLSXML(dict):
@@ -86,27 +78,6 @@ class PLSXML(dict):
             for x in path:
                 self.append(x, tables)
 
-    @staticmethod
-    def _convert_type(data):
-        """Converts data into appropriate type if it can."""
-        try:
-            return ast.literal_eval(data)
-        except:
-            return data
-
-    @staticmethod
-    def _is_xml(path):
-        """Returns True if the input path is a valid XML file name."""
-        fname, ext = os.path.splitext(path)
-
-        # Valid extensions
-        extensions = {'.xml'}
-
-        # Regex expressions in fname to exclude
-        regex = re.compile('__MACOSX|\.')
-
-        return ext in extensions and not regex.search(fname)
-
     def append(self, path, tables=None):
         """
         Parses the input file into the class dictionary. If tables is None,
@@ -122,8 +93,16 @@ class PLSXML(dict):
             referenced XML file. If None, then all tables in the XML file
             will be parsed.
         """
+        def is_xml(p):
+            fname, ext = os.path.splitext(p)
+            return ext in valid_ext and not excl_ext.search(fname)
+
+        _print = self._print_func()
+        valid_ext = {'.xml'} # Valid extensions
+        excl_ext = re.compile('__MACOSX|\.') # Excluded regex expressions
+
         if tables is not None:
-            if type(tables) is str:
+            if isinstance(tables, str):
                 tables = {tables}
             else:
                 tables = set(tables)
@@ -132,20 +111,31 @@ class PLSXML(dict):
         if zipfile.is_zipfile(path):
             with zipfile.ZipFile(path, 'r') as zf:
                 for x in zf.namelist():
-                    if self._is_xml(x):
+                    if is_xml(x):
                         with zf.open(x, 'r') as fh:
-                            self._print('Parsing:', path, x)
+                            _print('Parsing:', path, x)
                             self._load_xml(fh, tables)
 
         # XML
-        elif os.path.isfile(path) and self._is_xml(path):
+        elif os.path.isfile(path) and is_xml(path):
             with open(path, 'rb') as fh:
-                self._print('Parsing:', path)
+                _print('Parsing:', path)
                 self._load_xml(fh, tables)
 
         else:
-            print('Append Skipped :: {!r} is not a valid path.'.format(path))
+            print('Append Skipped:: {!r} is not a valid path.'.format(path))
 
+    def _print_func(self):
+        """
+        If the `verbose` property is True, returns the standard print function.
+        Otherwise, returns a function that does nothing.
+        """
+        def no_print(*args):
+            return
+
+        if self.verbose:
+            return print
+        return no_print
 
     def _load_xml(self, source, tables):
         """
@@ -162,69 +152,80 @@ class PLSXML(dict):
             referenced XML file. If None, then all tables in the XML file
             will be parsed.
         """
+        def convert_type(data):
+            """Converts data into appropriate type if it can."""
+            try:
+                return ast.literal_eval(data)
+            except:
+                return data
+
         tablesdict = {}
+        table = obj = titledetail = None
+        excl_tags = {'source_file'}
+        _print = self._print_func()
 
-        table = None
-        obj = None
-        titledetail = None
-
-        for event, elem in et.iterparse(source, events=('start', 'end')):
+        for event, e in et.iterparse(source, events=('start', 'end')):
+            # Start event
             if event == 'start':
-                if elem.tag == 'table':
-                    if tables is None or elem.attrib['tagname'] in tables:
-                        table = elem.attrib['tagname']
-                        titledetail = elem.attrib['titledetail']
-                        self._print('Loading:', table)
+
+                if e.tag == 'table':
+                    # Check if table is to be loaded and perform setup if it is
+                    if (tables is None) or (e.attrib['tagname'] in tables):
+                        table = e.attrib['tagname']
+                        titledetail = e.attrib['titledetail']
+                        _print('Loading:', table)
 
                         if table not in tablesdict:
                             tablesdict[table] = []
 
-                elif table is not None and obj is None and elem.tag != 'source_file':
-                    obj = elem.tag
+                elif (table is not None) and (obj is None) and (e.tag not in excl_tags):
+                    # Create new dictionary
+                    obj = e.tag
                     odict = {}
+
                     if titledetail not in {None, ''}:
                         # Title details are included in some POLE and TOWER reports
-                        odict['titledetail'] = self._convert_type(titledetail)
+                        odict['titledetail'] = convert_type(titledetail)
 
+            # End event
             elif event == 'end':
-                if elem.tag == 'table':
-                    table = None
-                    obj = None
-                    titledetail = None
 
-                elif table is not None and elem.tag == obj:
+                if e.tag == 'table':
+                    table = obj = titledetail = None
+
+                elif (table is not None) and (e.tag == obj):
                     tablesdict[table].append(odict)
                     obj = None
 
                 elif obj is not None:
-                    odict[elem.tag] = self._convert_type(elem.text)
+                    odict[e.tag] = convert_type(e.text)
 
-                elem.clear()
+                e.clear()
 
         for k in list(tablesdict):
             d = tablesdict.pop(k)
+
             if k in self:
                 self[k].append(d, sort=False)
-                self._print('Dropping Duplicates:', k)
+                _print('Dropping Duplicates:', k)
                 self[k].drop_duplicates(inplace=True)
+
             else:
                 self[k] = pd.DataFrame.from_dict(d)
                 # Create new dataframe with columns in order.
-                # Copy included to prevent possible view warnings during manipulation.
                 self[k] = self[k][list(d[0])].copy()
-            del d
-
-    def _print(self, *args):
-        """Prints the message if verbose is True."""
-        if self.verbose:
-            print(*args)
 
     def table_summary(self):
-        """Returns a string of all parsed tables, keys, and example values."""
-        summary = ''
+        """
+        Returns a string of all parsed tables, keys, and example values.
+        """
+        s = ''
+
         for table in sorted(self):
-            summary += '\n{:s}\n'.format(table)
+            s += '\n{:s}\n'.format(table)
+
             for key in self[table]:
                 v = self[table][key][0]
-                summary += '\t{!s:60}\t{}\n'.format(key, v)
-        return summary
+                s += '\t{!s:60}\t{}\n'.format(key, v)
+
+        return s
