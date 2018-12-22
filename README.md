@@ -1,13 +1,9 @@
 # PLSXML
 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/plsxml.svg)
-
 ![PyPI](https://img.shields.io/pypi/v/plsxml.svg)
-
 [![Build Status](https://travis-ci.com/mpewsey/plsxml.svg?branch=master)](https://travis-ci.com/mpewsey/plsxml)
-
 [![Documentation Status](https://readthedocs.org/projects/plsxml/badge/?version=latest)](https://plsxml.readthedocs.io/en/latest/?badge=latest)
-
 [![codecov](https://codecov.io/gh/mpewsey/plsxml/branch/master/graph/badge.svg)](https://codecov.io/gh/mpewsey/plsxml)
 
 
