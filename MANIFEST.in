@@ -2,3 +2,4 @@ include LICENSE
 include README.md
 include plsxml/data/galloping.xml
 include plsxml/data/galloping.zip
+include plsxml/data/galloping_empty.xml
