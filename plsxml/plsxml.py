@@ -206,7 +206,8 @@ class PLSXML(dict):
             d = tablesdict.pop(k)
 
             if k in self:
-                self[k].append(d, sort=False)
+                temp_df = pd.DataFrame.from_dict(d)
+                self[k] = pd.concat([self[k], temp_df], sort=False)
                 _print('Dropping Duplicates:', k)
                 self[k].drop_duplicates(inplace=True)
 
