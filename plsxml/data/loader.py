@@ -15,6 +15,10 @@ METADATA = dict(
     galloping_zip=dict(
         file='galloping.zip',
         tables=None
+    ),
+    galloping_empty=dict(
+        file='galloping_empty.xml',
+        tables=None
     )
 )
 

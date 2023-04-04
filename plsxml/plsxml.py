@@ -99,7 +99,7 @@ class PLSXML(dict):
 
         _print = self._print_func()
         valid_ext = {'.xml'} # Valid extensions
-        excl_ext = re.compile('__MACOSX|\.') # Excluded regex expressions
+        excl_ext = re.compile(r'__MACOSX|\.') # Excluded regex expressions
 
         if tables is not None:
             if isinstance(tables, str):
@@ -213,7 +213,8 @@ class PLSXML(dict):
             else:
                 self[k] = pd.DataFrame.from_dict(d)
                 # Create new dataframe with columns in order.
-                self[k] = self[k][list(d[0])].copy()
+                if d:
+                    self[k] = self[k][list(d[0])].copy()
 
     def table_summary(self):
         """

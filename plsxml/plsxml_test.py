@@ -54,3 +54,9 @@ def test_verbose():
 def test_load_data():
     for x in data_names():
         xml = load_data(x)
+
+
+def test_empty_table():
+    path = data_path('galloping_empty')
+    xml = PLSXML(path, verbose=True)
+    assert len(xml.keys()) == 1
